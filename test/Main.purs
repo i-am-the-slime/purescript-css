@@ -2,14 +2,16 @@ module Test.Main where
 
 import Prelude
 
-import Effect (Effect)
-import Effect.Exception (error, throwException)
-import CSS (Rendered, Path(..), Predicate(..), Refinement(..), Selector(..), FontFaceSrc(..), FontFaceFormat(..), renderedSheet, renderedInline, fromString, selector, block, display, render, borderBox, boxSizing, contentBox, blue, color, body, a, p, px, dashed, border, inlineBlock, red, (?), (&), (|>), (|*), (|+), byId, byClass, (@=), (^=), ($=), (*=), (~=), (|=), hover, fontFaceSrc, fontStyle, deg, zIndex, textOverflow, opacity, cursor)
-import CSS.FontStyle as FontStyle
-import CSS.Text.Overflow as TextOverflow
+import CSS (FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refinement(..), Rendered, Selector(..), a, block, blue, body, border, borderBox, boxSizing, byClass, byId, color, contentBox, cubicBezier, cursor, dashed, deg, display, easeInOut, fontFaceSrc, fontStyle, fromString, hover, inlineBlock, ms, opacity, p, px, red, render, renderedInline, renderedSheet, selector, textOverflow, transform, transition, zIndex, ($=), (&), (*=), (?), (@=), (^=), (|*), (|+), (|=), (|>), (~=))
 import CSS.Cursor as Cursor
+import CSS.FontStyle as FontStyle
+import CSS.Refinement (before)
+import CSS.Text.Overflow as TextOverflow
+import CSS.Transform as Transform
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty (singleton)
+import Effect (Effect)
+import Effect.Exception (error, throwException)
 
 example1 :: Rendered
 example1 = render do
@@ -47,7 +49,7 @@ example7 = render do
 
 withSelector :: Rendered
 withSelector = render do
-  a ? do
+  a & before ? do
     color blue
   a & hover ? do
     color red
@@ -96,6 +98,16 @@ adjacentSelector = render do
   a |+ a ? do
     display inlineBlock
 
+scaleTransform1 :: Rendered
+scaleTransform1 = render do
+  transform $ Transform.scaleX 1.0
+  transform $ Transform.scaleY 0.5
+  transform $ Transform.scaleZ 0.5
+
+scaleTransform2 :: Rendered
+scaleTransform2 = render do
+  transform $ Transform.scale 0.2 0.8
+
 exampleFontStyle1 :: Rendered
 exampleFontStyle1 = render do
   fontStyle FontStyle.italic
@@ -131,6 +143,14 @@ nestedNodesWithEmptyParent = render do
   fromString "#parent" ? do
     fromString "#child" ? display block
 
+transition1 :: Rendered
+transition1 = render do
+  transition "background-color" (ms 1.0) easeInOut (ms 0.0)
+
+transition2 :: Rendered
+transition2 = render do
+  transition "background-color" (ms 1.0) (cubicBezier 0.3 0.3 0.7 1.4) (ms 0.0)
+
 assertEqual :: forall a. Eq a => Show a => a -> a -> Effect Unit
 assertEqual x y = unless (x == y) <<< throwException <<< error $ "Assertion failed: " <> show x <> " /= " <> show y
 
@@ -148,7 +168,7 @@ main = do
 
   renderedInline example5 `assertEqual` Just "box-sizing: content-box; box-sizing: border-box"
 
-  renderedSheet withSelector `assertEqual` Just "a { color: hsl(240.0, 100.0%, 50.0%) }\na:hover { color: hsl(0.0, 100.0%, 50.0%) }\n"
+  renderedSheet withSelector `assertEqual` Just "a::before { color: hsl(240.0, 100.0%, 50.0%) }\na:hover { color: hsl(0.0, 100.0%, 50.0%) }\n"
   renderedSheet childSelector `assertEqual` Just "p > a { z-index: 9 }\n"
   renderedSheet deepSelector `assertEqual` Just "p a { display: block }\n"
   renderedSheet adjacentSelector `assertEqual` Just "a + a { display: inline-block }\n"
@@ -177,3 +197,8 @@ main = do
   renderedSheet attrHyph `assertEqual` Just "p[foo|='bar'] { display: block }\n"
 
   renderedInline exampleCursor `assertEqual` Just "cursor: not-allowed"
+  renderedInline scaleTransform1 `assertEqual` Just "transform: scaleX(1.0); transform: scaleY(0.5); transform: scaleZ(0.5)"
+  renderedInline scaleTransform2 `assertEqual` Just "transform: scale(0.2, 0.8)"
+
+  renderedInline transition1 `assertEqual` Just "-webkit-transition: background-color 1.0ms ease-in-out 0.0ms; -moz-transition: background-color 1.0ms ease-in-out 0.0ms; -ms-transition: background-color 1.0ms ease-in-out 0.0ms; -o-transition: background-color 1.0ms ease-in-out 0.0ms; transition: background-color 1.0ms ease-in-out 0.0ms"
+  renderedInline transition2 `assertEqual` Just "-webkit-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -moz-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -ms-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -o-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms"
