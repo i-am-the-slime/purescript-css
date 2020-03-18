@@ -236,5 +236,5 @@ main = do
   renderedInline nestedCalc `assertEqual` Just "width: calc(100.0% - calc(20.0px + 20.0px))"
   renderedInline calcWithConstant `assertEqual` Just "width: calc(calc(-1.0 * 20.0px) + 20.0px)"
 
-  renderedInline variable1 `assertEqual` Just "--varname: 20.0px; width: --varname"
-  renderedInline variableAndCalc `assertEqual` Just "--varname: 20.0px; width: calc(100.0% - --varname)"
+  renderedInline variable1 `assertEqual` Just "--varname: 20.0px; width: var(--varname)"
+  renderedInline variableAndCalc `assertEqual` Just "--varname: 20.0px; width: calc(100.0% - var(--varname))"

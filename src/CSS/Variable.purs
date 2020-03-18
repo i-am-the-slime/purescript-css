@@ -14,7 +14,7 @@ declare var = key (fromString (renderCSSVariableName var)) (value (extractValue 
   extractValue (CSSVariable _ value) = value
 
 reference :: forall type_. IsString type_ => CSSVariable type_ -> type_
-reference v = fromString (renderCSSVariableName v)
+reference v = fromString ("var(" <> renderCSSVariableName v <> ")")
 
 data CSSVariable type_ = CSSVariable String type_
 
