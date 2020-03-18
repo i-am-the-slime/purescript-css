@@ -2,13 +2,13 @@ module Test.Main where
 
 import Prelude
 
-import CSS (FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refinement(..), Rendered, Selector(..), a, block, blue, body, border, borderBox, boxSizing, byClass, byId, color, contentBox, cubicBezier, cursor, dashed, deg, display, easeInOut, fontFaceSrc, fontStyle, fromString, hover, inlineBlock, ms, opacity, p, pct, px, red, render, renderedInline, renderedSheet, selector, textOverflow, transform, transition, width, zIndex, ($=), (&), (*=), (?), (@=), (^=), (|*), (|+), (|=), (|>), (~=))
+import CSS (Abs, CSSVariable, FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refinement(..), Rendered, Selector(..), Size(..), a, block, blue, body, border, borderBox, boxSizing, byClass, byId, calc, color, contentBox, cubicBezier, cursor, dashed, declare, deg, display, easeInOut, fontFaceSrc, fontStyle, fromString, hover, inlineBlock, ms, opacity, p, pct, px, red, render, renderedInline, renderedSheet, selector, reference, textOverflow, transform, transition, unitless, variable, width, zIndex, (!*), (!+), (!-), ($=), (&), (*=), (?), (@=), (^=), (|*), (|+), (|=), (|>), (~=))
 import CSS.Cursor as Cursor
 import CSS.FontStyle as FontStyle
 import CSS.Refinement (before)
-import CSS.Size (CalcOp(..), calc, unitless, (!*), (!+), (!-))
 import CSS.Text.Overflow as TextOverflow
 import CSS.Transform as Transform
+import CSS.Variable (variable)
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty (singleton)
 import Effect (Effect)
@@ -164,6 +164,22 @@ calcWithConstant :: Rendered
 calcWithConstant = render do
   width $ unitless (-1.0) !* px 20.0 !+ px 20.0
 
+variable1 :: Rendered
+variable1 = render do
+  declare myVar
+  width $ reference myVar
+  where
+  myVar :: CSSVariable (Size Abs)
+  myVar = variable "varname" (px 20.0)
+
+variableAndCalc :: Rendered
+variableAndCalc = render do
+  declare myVar
+  width $ pct 100.0 !- reference myVar
+  where
+  myVar :: CSSVariable (Size Abs)
+  myVar = variable "varname" (px 20.0)
+
 assertEqual :: forall a. Eq a => Show a => a -> a -> Effect Unit
 assertEqual x y = unless (x == y) <<< throwException <<< error $ "Assertion failed: " <> show x <> " /= " <> show y
 
@@ -219,3 +235,6 @@ main = do
   renderedInline calc1 `assertEqual` Just "width: calc(20.0px + 20.0px)"
   renderedInline nestedCalc `assertEqual` Just "width: calc(100.0% - calc(20.0px + 20.0px))"
   renderedInline calcWithConstant `assertEqual` Just "width: calc(calc(-1.0 * 20.0px) + 20.0px)"
+
+  renderedInline variable1 `assertEqual` Just "--varname: 20.0px; width: --varname"
+  renderedInline variableAndCalc `assertEqual` Just "--varname: 20.0px; width: calc(100.0% - --varname)"

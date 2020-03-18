@@ -19,7 +19,7 @@ import CSS.Render (Inline(..), Rendered, Sheet(..), collect, collect', face, fea
 import CSS.Predicate (Predicate(..)) as X
 import CSS.Refinement (Refinement(..), byId, byClass, func, attr, (@=), (^=), ($=), (*=), (~=), (|=), after, before, firstLetter, firstLine, selection, backdrop, active, any, anyLink, checked, default, defined, disabled, empty, enabled, first, firstChild, firstOfType, fullscreen, focus, focusVisible, hover, indeterminate, inRange, invalid, lastChild, lastOfType, link, onlyChild, onlyOfType, optional, outOfRange, readOnly, readWrite, required, root, scope, target, valid, visited) as X
 import CSS.Selector (Path(..), Selector(..), star, element, (|*), (|>), (|+), (&)) as X
-import CSS.Size (Abs, Angle(..), Deg, Rad, Rel, Size(..), deg, em, ex, nil, pct, pt, px, rad, rem, sym, vh, vmax, vmin, vw) as X
+import CSS.Size (Abs, Angle(..), Deg, Rad, Rel, Size(..), deg, em, ex, nil, pct, pt, px, rad, rem, sym, vh, vmax, vmin, vw, calc, unitless, (!*), (!+), (!-)) as X
 import CSS.String (class IsString, fromString) as X
 import CSS.Stylesheet (App(..), CSS, Feature(..), Keyframes(..), MediaQuery(..), MediaType(..), NotOrOnly(..), Rule(..), StyleM(..), fontFace, importUrl, key, keyframes, keyframesFromTo, prefixed, query, rule, runS, select, (?)) as X
 import CSS.Text (TextDecoration(..), blink, letterSpacing, lineThrough, noneTextDecoration, overline, textDecoration, underline) as X
@@ -29,3 +29,4 @@ import CSS.Text.Overflow (TextOverflow, textOverflow) as X
 import CSS.Time (Time(..), ms, sec) as X
 import CSS.Transform (TransformOrigin(..), TransformOriginOffset(..), Transformation(..), offset, offsetBottom, offsetCenter, offsetLeft, offsetRight, offsetTop, rotate, transform, transformOrigin, transforms, translate) as X
 import CSS.Transition (TimingFunction(..), ease, easeIn, easeOut, easeInOut, linear, stepStart, stepEnd, steps, cubicBezier, transition, transitionProperty, transitionProperties, transitionDuration, transitionDurations, transitionTimingFunction, transitionTimingFunctions, transitionDelay, transitionDelays) as X
+import CSS.Variable (declare, CSSVariable, variable, reference) as X

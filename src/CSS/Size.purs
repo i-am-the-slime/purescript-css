@@ -97,10 +97,7 @@ deg i = Angle $ (value i <> fromString "deg")
 rad :: Number -> Angle Rad
 rad i = Angle $ (value i <> fromString "rad")
 
-data Calc = Calc
-data CalcOp = 
-  CalcAdd | CalcSubtract | CalcMultiply | CalcDivide
-
+-- | The calc function in CSS, e.g. calc(100% - 20px)
 calc :: forall a b. CalcOp -> Size a -> Size b -> Size Calc
 calc operation a b = Size calculated
   where
@@ -111,16 +108,20 @@ calc operation a b = Size calculated
     CalcMultiply -> " * "
     CalcDivide -> " / "
 
-calcAdd :: forall t100 t101. Size t101 -> Size t100 -> Size Calc
+data Calc = Calc
+data CalcOp = 
+  CalcAdd | CalcSubtract | CalcMultiply | CalcDivide
+
+calcAdd :: forall a b. Size a -> Size b -> Size Calc
 calcAdd = calc CalcAdd
 
-calcSub :: forall t107 t108. Size t108 -> Size t107 -> Size Calc
+calcSub :: forall a b. Size a -> Size b -> Size Calc
 calcSub = calc CalcSubtract
 
-calcMul :: forall t106 t107. Size t107 -> Size t106 -> Size Calc
+calcMul :: forall a b. Size a -> Size b -> Size Calc
 calcMul = calc CalcMultiply
 
-calcDiv :: forall t102 t103. Size t103 -> Size t102 -> Size Calc
+calcDiv :: forall a b. Size a -> Size b -> Size Calc
 calcDiv = calc CalcDivide
 
 infixr 3 calcAdd as !+
