@@ -5,6 +5,7 @@ import Prelude
 import CSS.Common (class Auto)
 import CSS.Property (class Val, Value, value)
 import CSS.String (class IsString, fromString)
+import Data.Foldable (fold)
 
 newtype Size a = Size Value
 
@@ -38,6 +39,10 @@ px i = Size (value i <> fromString "px")
 -- | Size in points (1pt = 1/72 of 1in).
 pt :: Number -> Size Abs
 pt i = Size (value i <> fromString "pt")
+
+-- | Size in ch's.
+ch :: Number -> Size Abs
+ch i = Size (value i <> fromString "ch")
 
 -- | Size in em's.
 em :: Number -> Size Abs
@@ -92,3 +97,17 @@ deg i = Angle $ (value i <> fromString "deg")
 -- | Angle in radians.
 rad :: Number -> Angle Rad
 rad i = Angle $ (value i <> fromString "rad")
+
+data Calc = Calc
+data CalcOp = 
+  CalcAdd | CalcSubtract | CalcMultiply | CalcDivide
+
+calc :: forall a b. CalcOp -> Size a -> Size b -> Size Calc
+calc operation a b = Size calculated
+  where
+  calculated = fromString "calc(" <> value a <> op <> value b <> fromString ")"
+  op = value case operation of 
+    CalcAdd -> " + "
+    CalcSubtract -> " - "
+    CalcMultiply -> " * "
+    CalcDivide -> " / "

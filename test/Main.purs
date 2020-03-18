@@ -2,10 +2,11 @@ module Test.Main where
 
 import Prelude
 
-import CSS (FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refinement(..), Rendered, Selector(..), a, block, blue, body, border, borderBox, boxSizing, byClass, byId, color, contentBox, cubicBezier, cursor, dashed, deg, display, easeInOut, fontFaceSrc, fontStyle, fromString, hover, inlineBlock, ms, opacity, p, px, red, render, renderedInline, renderedSheet, selector, textOverflow, transform, transition, zIndex, ($=), (&), (*=), (?), (@=), (^=), (|*), (|+), (|=), (|>), (~=))
+import CSS (FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refinement(..), Rendered, Selector(..), a, block, blue, body, border, borderBox, boxSizing, byClass, byId, color, contentBox, cubicBezier, cursor, dashed, deg, display, easeInOut, fontFaceSrc, fontStyle, fromString, hover, inlineBlock, ms, opacity, p, pct, px, red, render, renderedInline, renderedSheet, selector, textOverflow, transform, transition, width, zIndex, ($=), (&), (*=), (?), (@=), (^=), (|*), (|+), (|=), (|>), (~=))
 import CSS.Cursor as Cursor
 import CSS.FontStyle as FontStyle
 import CSS.Refinement (before)
+import CSS.Size (CalcOp(..), calc, unitless)
 import CSS.Text.Overflow as TextOverflow
 import CSS.Transform as Transform
 import Data.Maybe (Maybe(..))
@@ -151,6 +152,18 @@ transition2 :: Rendered
 transition2 = render do
   transition "background-color" (ms 1.0) (cubicBezier 0.3 0.3 0.7 1.4) (ms 0.0)
 
+calc1 :: Rendered
+calc1 = render do
+  width (calc CalcAdd (px 20.0) (px 20.0))
+
+nestedCalc :: Rendered
+nestedCalc = render do
+  width (calc CalcSubtract (pct 100.0) (calc CalcAdd (px 20.0) (px 20.0)))
+
+calcWithConstant :: Rendered
+calcWithConstant = render do
+  width (calc CalcMultiply (unitless (-1.0)) (calc CalcAdd (px 20.0) (px 20.0)))
+
 assertEqual :: forall a. Eq a => Show a => a -> a -> Effect Unit
 assertEqual x y = unless (x == y) <<< throwException <<< error $ "Assertion failed: " <> show x <> " /= " <> show y
 
@@ -202,3 +215,7 @@ main = do
 
   renderedInline transition1 `assertEqual` Just "-webkit-transition: background-color 1.0ms ease-in-out 0.0ms; -moz-transition: background-color 1.0ms ease-in-out 0.0ms; -ms-transition: background-color 1.0ms ease-in-out 0.0ms; -o-transition: background-color 1.0ms ease-in-out 0.0ms; transition: background-color 1.0ms ease-in-out 0.0ms"
   renderedInline transition2 `assertEqual` Just "-webkit-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -moz-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -ms-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; -o-transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms; transition: background-color 1.0ms cubic-bezier(0.3, 0.3, 0.7, 1.4) 0.0ms"
+
+  renderedInline calc1 `assertEqual` Just "width: calc(20.0px + 20.0px)"
+  renderedInline nestedCalc `assertEqual` Just "width: calc(100.0% - calc(20.0px + 20.0px))"
+  renderedInline calcWithConstant `assertEqual` Just "width: calc(-1.0 * calc(20.0px + 20.0px))"
