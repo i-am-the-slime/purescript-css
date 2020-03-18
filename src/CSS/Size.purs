@@ -5,7 +5,6 @@ import Prelude
 import CSS.Common (class Auto)
 import CSS.Property (class Val, Value, value)
 import CSS.String (class IsString, fromString)
-import Data.Foldable (fold)
 
 newtype Size a = Size Value
 
@@ -111,3 +110,20 @@ calc operation a b = Size calculated
     CalcSubtract -> " - "
     CalcMultiply -> " * "
     CalcDivide -> " / "
+
+calcAdd :: forall t100 t101. Size t101 -> Size t100 -> Size Calc
+calcAdd = calc CalcAdd
+
+calcSub :: forall t107 t108. Size t108 -> Size t107 -> Size Calc
+calcSub = calc CalcSubtract
+
+calcMul :: forall t106 t107. Size t107 -> Size t106 -> Size Calc
+calcMul = calc CalcMultiply
+
+calcDiv :: forall t102 t103. Size t103 -> Size t102 -> Size Calc
+calcDiv = calc CalcDivide
+
+infixr 3 calcAdd as !+
+infixr 3 calcSub as !-
+infixr 4 calcMul as !*
+infixr 4 calcDiv as !/

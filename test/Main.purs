@@ -6,7 +6,7 @@ import CSS (FontFaceFormat(..), FontFaceSrc(..), Path(..), Predicate(..), Refine
 import CSS.Cursor as Cursor
 import CSS.FontStyle as FontStyle
 import CSS.Refinement (before)
-import CSS.Size (CalcOp(..), calc, unitless)
+import CSS.Size (CalcOp(..), calc, unitless, (!*), (!+), (!-))
 import CSS.Text.Overflow as TextOverflow
 import CSS.Transform as Transform
 import Data.Maybe (Maybe(..))
@@ -154,15 +154,15 @@ transition2 = render do
 
 calc1 :: Rendered
 calc1 = render do
-  width (calc CalcAdd (px 20.0) (px 20.0))
+  width $ px 20.0 !+ px 20.0
 
 nestedCalc :: Rendered
 nestedCalc = render do
-  width (calc CalcSubtract (pct 100.0) (calc CalcAdd (px 20.0) (px 20.0)))
+  width $ pct 100.0 !- px 20.0 !+ px 20.0
 
 calcWithConstant :: Rendered
 calcWithConstant = render do
-  width (calc CalcMultiply (unitless (-1.0)) (calc CalcAdd (px 20.0) (px 20.0)))
+  width $ unitless (-1.0) !* px 20.0 !+ px 20.0
 
 assertEqual :: forall a. Eq a => Show a => a -> a -> Effect Unit
 assertEqual x y = unless (x == y) <<< throwException <<< error $ "Assertion failed: " <> show x <> " /= " <> show y
@@ -218,4 +218,4 @@ main = do
 
   renderedInline calc1 `assertEqual` Just "width: calc(20.0px + 20.0px)"
   renderedInline nestedCalc `assertEqual` Just "width: calc(100.0% - calc(20.0px + 20.0px))"
-  renderedInline calcWithConstant `assertEqual` Just "width: calc(-1.0 * calc(20.0px + 20.0px))"
+  renderedInline calcWithConstant `assertEqual` Just "width: calc(calc(-1.0 * 20.0px) + 20.0px)"
