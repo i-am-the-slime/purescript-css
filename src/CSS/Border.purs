@@ -6,7 +6,7 @@ import Data.Tuple.Nested (tuple3, tuple4)
 
 import CSS.Color (Color)
 import CSS.Property (class Val, Value)
-import CSS.Size (Size, Abs)
+import CSS.Size (Size)
 import CSS.String (fromString)
 import CSS.Stylesheet (CSS, key)
 
@@ -45,19 +45,19 @@ inset = Stroke $ fromString "inset"
 outset :: Stroke
 outset = Stroke $ fromString "outset"
 
-border :: Stroke -> Size Abs -> Color -> CSS
+border :: forall a. Stroke -> Size a -> Color -> CSS
 border a b c = key (fromString "border") $ tuple3 a b c
 
-borderTop :: Stroke -> Size Abs -> Color -> CSS
+borderTop :: forall a. Stroke -> Size a -> Color -> CSS
 borderTop a b c = key (fromString "border-top") $ tuple3 a b c
 
-borderBottom :: Stroke -> Size Abs -> Color -> CSS
+borderBottom :: forall a. Stroke -> Size a -> Color -> CSS
 borderBottom a b c = key (fromString "border-bottom") $ tuple3 a b c
 
-borderLeft :: Stroke -> Size Abs -> Color -> CSS
+borderLeft :: forall a. Stroke -> Size a -> Color -> CSS
 borderLeft a b c = key (fromString "border-left") $ tuple3 a b c
 
-borderRight :: Stroke -> Size Abs -> Color -> CSS
+borderRight :: forall a. Stroke -> Size a -> Color -> CSS
 borderRight a b c = key (fromString "border-right") $ tuple3 a b c
 
 borderColor :: Color -> CSS
