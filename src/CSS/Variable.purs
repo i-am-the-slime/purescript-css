@@ -18,7 +18,6 @@ reference v = fromString ("var(" <> renderCSSVariableName v <> ")")
 
 data CSSVariable type_ = CSSVariable String type_
 
-
 variable :: forall type_. Val type_ => String -> type_ -> CSSVariable type_
 variable name = CSSVariable sanitised
   where

@@ -6,6 +6,7 @@ import CSS.Common (class Auto)
 import CSS.Property (class Val, Value, value)
 import CSS.String (class IsString, fromString)
 
+newtype Size :: forall k. k -> Type
 newtype Size a = Size Value
 
 derive instance eqSize :: Eq a => Eq (Size a)
@@ -81,6 +82,7 @@ sym f a = f a a a a
 data Deg
 data Rad
 
+newtype Angle :: forall k. k -> Type
 newtype Angle a = Angle Value
 
 derive instance eqAngle :: Eq a => Eq (Angle a)
